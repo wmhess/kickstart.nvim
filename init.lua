@@ -208,6 +208,9 @@ vim.keymap.set('n', '<Leader>q', 'q')
 vim.keymap.set('n', '<Leader>w', '<cmd>w<CR>')
 vim.keymap.set('n', 'q', '<Nop>')
 
+-- See if this helps:
+vim.opt.textwidth = 80
+
 -- ====================================== --
 
 -- [[ Basic Autocommands ]]
@@ -251,7 +254,7 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
--- -- [[ My Plugins ]] -- --
+  -- -- [[ My Plugins ]] -- --
   {
     'stevearc/oil.nvim',
     opts = {
