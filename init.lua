@@ -650,17 +650,15 @@ require('lazy').setup({
       --  You can press `g?` for help in this menu.
       require('mason').setup()
 
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-      })
-      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
+      -- Install LSP servers from the `servers` table
       require('mason-lspconfig').setup {
+        automatic_installation = false,
         handlers = {
           function(server_name)
+            -- Skip stylua - it's a formatter tool, not an LSP server
+            if server_name == 'stylua' then
+              return
+            end
             local server = servers[server_name] or {}
             -- This handles overriding only values explicitly passed
             -- by the server configuration above. Useful when disabling
@@ -668,6 +666,24 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
+        },
+      }
+
+      -- Install formatting/linting tools via mason-tool-installer
+      -- NOTE: stylua is NOT installed via Mason to avoid LSP conflicts
+      -- stylua is installed via Homebrew instead
+      require('mason-tool-installer').setup {
+        ensure_installed = {
+          -- 'stylua' is intentionally excluded - installed via: brew install stylua
+        },
+      }
+
+      -- Install formatting/linting tools via mason-tool-installer
+      -- Note: stylua is excluded because it conflicts with lspconfig (it's a formatter, not an LSP server)
+      -- Install stylua via: brew install stylua
+      require('mason-tool-installer').setup {
+        ensure_installed = {
+          -- 'stylua' is installed separately via brew, not mason
         },
       }
     end,
