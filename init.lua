@@ -230,6 +230,9 @@ vim.keymap.set('n', '<Leader>q', 'q')
 vim.keymap.set('n', '<Leader>w', '<cmd>w<CR>')
 vim.keymap.set('n', 'q', '<Nop>')
 
+-- See if this helps:
+vim.opt.textwidth = 80
+
 -- ====================================== --
 
 -- [[ Basic Autocommands ]]
