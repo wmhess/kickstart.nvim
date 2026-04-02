@@ -102,7 +102,7 @@ vim.g.have_nerd_font = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -157,6 +157,28 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- [[ My Additional Options ]] --
+-- When to wrap the line.
+vim.opt.textwidth = 79
+
+-- Change the relative line number display to off when in insert mode
+vim.cmd [[
+augroup numbertoggle
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave,WinEnter * if &nu && mode() != "i" | set rnu   | endif
+  autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
+augroup END
+]]
+
+-- [[ My Custom Commands ]] --
+-- Opens the current buffer in the mac finder --
+vim.api.nvim_create_user_command('Rfinder', function()
+  vim.fn.system('open -R ' .. vim.fn.expand '%:p')
+end, { nargs = 0 })
+
+-- Cursor Shenanigans
+vim.opt.guicursor = 'n-v-c-sm:block-blinkwait50-blinkon50-blinkoff50,i-ci-ve:ver25-Cursor-blinkon100-blinkoff100,r-cr-o:hor20'
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -204,7 +226,7 @@ vim.keymap.set('i', ';;', '<Esc>')
 -- Try this so you really need to mean to record something
 -- Playback is still @ + recording letter
 vim.keymap.set('n', '<Leader>q', 'q')
--- Use Leader W for saving
+-- Use Leader w for saving (yes it conflicts with the telescope rule, but for now it's more useful to me)
 vim.keymap.set('n', '<Leader>w', '<cmd>w<CR>')
 vim.keymap.set('n', 'q', '<Nop>')
 
@@ -271,6 +293,26 @@ require('lazy').setup({
       theme = 'nightfox',
     },
     dependencies = { 'nvim-tree/nvim-web-devicons' },
+  },
+
+  {
+    'tadmccorkle/markdown.nvim',
+    ft = 'markdown', -- or 'event = "VeryLazy"'
+    opts = {
+      -- configuration here or empty for defaults
+    },
+
+    {
+      'chrishrb/gx.nvim',
+      keys = { { 'gx', '<cmd>Browse<cr>', mode = { 'n', 'x' } } },
+      cmd = { 'Browse' },
+      init = function()
+        vim.g.netrw_nogx = 1 -- disable netrw gx
+      end,
+      dependencies = { 'nvim-lua/plenary.nvim' }, -- Required for Neovim < 0.10.0
+      config = true, -- default settings
+      submodules = false, -- not needed, submodules are required only for tests
+    },
   },
 
   -- ====================================== --
@@ -855,8 +897,8 @@ require('lazy').setup({
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       -- vim.cmd.colorscheme 'tokyonight-night'
-      vim.cmd.colorscheme 'nightfox'
-
+      -- vim.cmd.colorscheme 'nightfox'
+      vim.cmd.colorscheme 'nordfox'
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
