@@ -723,40 +723,16 @@ require('lazy').setup({
       --  You can press `g?` for help in this menu.
       require('mason').setup()
 
-      -- Install LSP servers from the `servers` table
+      -- Apply custom configuration for lua_ls (the automatic_enable mechanism
+      -- enables it from Mason, but doesn't apply the custom on_init/settings below).
+      vim.lsp.config('lua_ls', servers['lua_ls'])
+
+      -- Auto-enable all Mason-installed LSP servers EXCEPT stylua.
+      -- stylua is a formatter (used by conform.nvim), not an LSP server.
+      -- It is installed via Homebrew, not Mason.
       require('mason-lspconfig').setup {
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            -- Skip stylua - it's a formatter tool, not an LSP server
-            if server_name == 'stylua' then
-              return
-            end
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for tsserver)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-        },
-      }
-
-      -- Install formatting/linting tools via mason-tool-installer
-      -- NOTE: stylua is NOT installed via Mason to avoid LSP conflicts
-      -- stylua is installed via Homebrew instead
-      require('mason-tool-installer').setup {
-        ensure_installed = {
-          -- 'stylua' is intentionally excluded - installed via: brew install stylua
-        },
-      }
-
-      -- Install formatting/linting tools via mason-tool-installer
-      -- Note: stylua is excluded because it conflicts with lspconfig (it's a formatter, not an LSP server)
-      -- Install stylua via: brew install stylua
-      require('mason-tool-installer').setup {
-        ensure_installed = {
-          -- 'stylua' is installed separately via brew, not mason
+        automatic_enable = {
+          exclude = { 'stylua' },
         },
       }
     end,
